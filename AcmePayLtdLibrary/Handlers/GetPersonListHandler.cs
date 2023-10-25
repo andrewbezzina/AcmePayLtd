@@ -13,9 +13,9 @@ namespace AcmePayLtdLibrary.Handlers
 {
     public class GetPersonListHandler : IRequestHandler<GetPersonListQuery, List<PersonModel>>
     {
-        private readonly IDataAccess _data;
+        private readonly IPersonDataAccess _data;
 
-        public GetPersonListHandler(IDataAccess data)
+        public GetPersonListHandler(IPersonDataAccess data)
         {
             _data = data;
         }

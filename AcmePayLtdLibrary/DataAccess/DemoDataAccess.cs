@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AcmePayLtdLibrary.DataAccess
 {
-    public class DemoDataAccess : IDataAccess
+    public class DemoDataAccess : IPersonDataAccess
     {
         private List<PersonModel> people = new();
 

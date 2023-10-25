@@ -13,9 +13,9 @@ namespace AcmePayLtdLibrary.Handlers
 {
     public class InsertPersonHandler : IRequestHandler<InsertPersonCommand, PersonModel>
     {
-        private readonly IDataAccess _data;
+        private readonly IPersonDataAccess _data;
 
-        public InsertPersonHandler(IDataAccess data)
+        public InsertPersonHandler(IPersonDataAccess data)
         {
             _data = data;
         }

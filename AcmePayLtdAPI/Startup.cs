@@ -22,7 +22,10 @@ namespace AcmePayLtdAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AcmePayLtdApi", Version = "v1" });
             });
-            services.AddSingleton<IDataAccess, DemoDataAccess>();
+            //TODO remove
+            services.AddSingleton<IPersonDataAccess, DemoDataAccess>();
+            // TODO replace with SQL data access.
+            services.AddSingleton<ITransactionDataAccess, DemoTransactionDataAccess>();
             services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssemblies(typeof(AcmePayLtdLibraryMediatREntrypoint).Assembly);
