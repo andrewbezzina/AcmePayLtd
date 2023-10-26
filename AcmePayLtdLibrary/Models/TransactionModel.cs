@@ -7,15 +7,10 @@ using System.Threading.Tasks;
 
 namespace AcmePayLtdLibrary.Models
 {
-    public enum Status
-    {
-        Authorized = 1,
-        Captured = 2,
-        Voided = 3
-    }
     public class TransactionModel
     {
         public int Id { get; set; }
+        public string Uuid { get; set; }
         public Decimal Amount { get; set; }
         public string Currency { get; set; }
         public string CardholderNumber { get; set; }
@@ -23,8 +18,11 @@ namespace AcmePayLtdLibrary.Models
         public int ExpirationMonth { get; set; }
         public int ExpirationYear { get; set;}
         public int CVV { get; set; }
-        public string OrderReference { get; set; }
-        public string UUID { get; set; } 
+        public string AuthorizeOrderReference { get; set; }
+        public string VoidOrderReference { get; set; }
+        public string CaptureOrderReference { get; set; }
         public Status Status { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime DateUpdated { get; set; }
     }
 }

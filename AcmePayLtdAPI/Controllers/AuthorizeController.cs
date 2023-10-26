@@ -1,6 +1,7 @@
 ﻿using AcmePayLtdLibrary.Commands;
 using AcmePayLtdLibrary.Models;
 using AcmePayLtdLibrary.Models.Request;
+using AcmePayLtdLibrary.Models.Response;
 using AcmePayLtdLibrary.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -23,14 +24,14 @@ namespace AcmePayLtdAPI.Controllers
         // GET: api/<TransactionController>
         [HttpGet]
         // TODO change output model
-        public async Task<List<TransactionModel>> Get()
+        public async Task<IEnumerable<GetTransactionModel>> Get()
         {
             return await _mediator.Send(new GetTransactionListQuery());
         }
 
         // GET api/<TransactionController>/5
         [HttpGet("{id}")]
-        public async Task<TransactionModel> Get(string id)
+        public async Task<GetTransactionModel> Get(string id)
         {
             return await _mediator.Send(new GetTransactionByIdQuery(id));
         }
@@ -38,7 +39,7 @@ namespace AcmePayLtdAPI.Controllers
         // POST api/<TransactionController>
         [HttpPost]
         //TODO change to input model
-        public async Task<TransactionModel> Post([FromBody] AuthorizeTransactionModel transaction)
+        public async Task<TransactionModel> Post([FromBody] PostAuthorizeTransactionModel transaction)
         {
             return await _mediator.Send ( new AuthorizeTransactionCommand(transaction));
             

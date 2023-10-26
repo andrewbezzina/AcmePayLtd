@@ -30,9 +30,11 @@ namespace AcmePayLtdLibrary.Handlers
                 ExpirationMonth = request.Transaction.ExpirationMonth,
                 ExpirationYear = request.Transaction.ExpirationYear,
                 CVV = request.Transaction.CVV,
-                OrderReference = request.Transaction.OrderReference,
-                UUID = Guid.NewGuid().ToString(),
-                Status = Status.Authorized
+                AuthorizeOrderReference = request.Transaction.OrderReference,
+                Uuid = Guid.NewGuid().ToString(),
+                Status = Status.Authorized,
+                DateCreated = DateTime.UtcNow,
+                DateUpdated = DateTime.UtcNow
             };
             return _data.AuthorizeTransactionAsync(transaction);
         }

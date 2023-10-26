@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AcmePayLtdLibrary.Models.Request
 {
-    public class AuthorizeTransactionModel
+    public class PostAuthorizeTransactionModel
     {
         public Decimal Amount { get; set; }
         public string Currency { get; set; } // TODO validate that is valid currency code

@@ -1,6 +1,8 @@
 ﻿using AcmePayLtdLibrary.DataAccess;
 using AcmePayLtdLibrary.Models;
+using AcmePayLtdLibrary.Models.Response;
 using AcmePayLtdLibrary.Queries;
+using AcmePayLtdLibrary.Services;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -10,17 +12,21 @@ using System.Threading.Tasks;
 
 namespace AcmePayLtdLibrary.Handlers
 {
-    public class GetTransactionListHandler : IRequestHandler<GetTransactionListQuery, List<TransactionModel>>
+    public class GetTransactionListHandler : IRequestHandler<GetTransactionListQuery, IEnumerable<GetTransactionModel>>
     {
         private readonly ITransactionDataAccess _data;
+        private readonly ITransactionHelpers _transactionHelpers;
 
-        public GetTransactionListHandler(ITransactionDataAccess data)
+        public GetTransactionListHandler(ITransactionDataAccess data, ITransactionHelpers transactionHelpers)
         {
             _data = data;
+            _transactionHelpers = transactionHelpers;
         }
-        public Task<List<TransactionModel>> Handle(GetTransactionListQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GetTransactionModel>> Handle(GetTransactionListQuery request, CancellationToken cancellationToken)
         {
-            return _data.GetTransactionsAync();
+            var sqlTransations = await _data.GetTransactionsAync();
+
+            return sqlTransations.Select(sqlTransations => _transactionHelpers.MapSqlTransactionToResponse(sqlTransations));
         }
     }
 }

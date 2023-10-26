@@ -9,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace AcmePayLtdLibrary.Commands
 {
-    public record AuthorizeTransactionCommand(AuthorizeTransactionModel Transaction) : IRequest<TransactionModel>;
+    public record AuthorizeTransactionCommand(PostAuthorizeTransactionModel Transaction) : IRequest<TransactionModel>;
 }

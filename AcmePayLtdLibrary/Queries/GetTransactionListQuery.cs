@@ -1,12 +1,7 @@
-﻿using AcmePayLtdLibrary.Models;
+﻿using AcmePayLtdLibrary.Models.Response;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AcmePayLtdLibrary.Queries
 {
-    public record GetTransactionListQuery() : IRequest<List<TransactionModel>>;
+    public record GetTransactionListQuery() : IRequest<IEnumerable<GetTransactionModel>>;
 }
