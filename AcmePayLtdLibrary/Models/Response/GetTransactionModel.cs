@@ -14,6 +14,7 @@ namespace AcmePayLtdLibrary.Models.Response
         public string CardholderNumber { get; set; }
         public string HolderName { get; set; }
         public string Id { get; set; } //Uuid
+
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public Status Status { get; set; }
     }

@@ -4,6 +4,7 @@ using AcmePayLtdLibrary.Models.Response;
 using AcmePayLtdLibrary.Queries;
 using AcmePayLtdLibrary.Services;
 using MediatR;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +23,13 @@ namespace AcmePayLtdLibrary.Handlers
             _data = data;
             _transactionHelpers = transactionHelpers;
         }
-        public async Task<IEnumerable<GetTransactionModel>> Handle(GetTransactionListQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GetTransactionModel>?> Handle(GetTransactionListQuery request, CancellationToken cancellationToken)
         {
             var sqlTransations = await _data.GetTransactionsAync();
+            if(sqlTransations.IsNullOrEmpty())
+            {
+                return null;
+            }
 
             return sqlTransations.Select(sqlTransations => _transactionHelpers.MapSqlTransactionToResponse(sqlTransations));
         }

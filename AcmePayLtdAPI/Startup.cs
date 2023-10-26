@@ -30,12 +30,18 @@ namespace AcmePayLtdAPI
                 cfg.RegisterServicesFromAssemblies(typeof(AcmePayLtdLibraryMediatREntrypoint).Assembly);
             });
 
-            // TODO replace with SQL data access.
-            services.AddSingleton<ITransactionDataAccess, DemoTransactionDataAccess>();
+            //Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.json");
+            services.AddDbContext<TransactionDbContext>(options => {
+                options.UseSqlServer(Configuration.GetConnectionString("TransactionSqlDatabase"));
+                options.EnableDetailedErrors(true);
+                });
+
+            services.AddScoped<ITransactionDataAccess, DbTransactionDataAccess>();
+            // If you fail to connect to sql db for some reason please comment aboove line and uncomment below to use in memory data
+            //services.AddSingleton<ITransactionDataAccess, DemoTransactionDataAccess>();
+            
             services.AddScoped<ITransactionHelpers, TransactionHelpers>();
 
-            //Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.json");
-            services.AddDbContext<TransactionDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("TransactionSqlDatabase")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

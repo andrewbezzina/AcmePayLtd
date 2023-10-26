@@ -12,8 +12,8 @@ namespace AcmePayLtdLibrary.DataAccess
         private List<TransactionModel> _transactions = new();
         public DemoTransactionDataAccess()
         {
-            _transactions.Add(new TransactionModel { Amount = 50, CardholderNumber = "1234123412341234", Currency = "EUR", CVV = 123, ExpirationMonth = 12, ExpirationYear = 2023, HolderName = "Andrew Bezzina", Id = 1, AuthorizeOrderReference = "Test 1", Uuid = Guid.NewGuid().ToString(), Status = Status.Authorized });
-            _transactions.Add(new TransactionModel { Amount = 75, CardholderNumber = "1234123412341234", Currency = "EUR", CVV = 123, ExpirationMonth = 12, ExpirationYear = 2023, HolderName = "Andrew Bezzina", Id = 2, AuthorizeOrderReference = "Test 2", Uuid = Guid.NewGuid().ToString(), Status = Status.Authorized });
+            _transactions.Add(new TransactionModel { Amount = 50, CardholderNumber = "1234123412341234", Currency = "EUR", CVV = 123, ExpirationMonth = 12, ExpirationYear = 2023, HolderName = "Andrew Bezzina", Id = 1, AuthorizeOrderReference = "Test 1", Uuid = Guid.NewGuid(), Status = (int)Status.Authorized });
+            _transactions.Add(new TransactionModel { Amount = 75, CardholderNumber = "1234123412341234", Currency = "EUR", CVV = 123, ExpirationMonth = 12, ExpirationYear = 2023, HolderName = "Andrew Bezzina", Id = 2, AuthorizeOrderReference = "Test 2", Uuid = Guid.NewGuid(), Status = (int)Status.Authorized });
         }
 
         public Task<List<TransactionModel>> GetTransactionsAync()
@@ -29,11 +29,17 @@ namespace AcmePayLtdLibrary.DataAccess
             return Task.FromResult(transaction);
         }
 
-        public Task<TransactionModel> GetTransactionByIdAync(string Id)
+        public Task<TransactionModel> GetTransactionByIdAync(Guid Id)
         {
             var transaction = _transactions.FirstOrDefault(t => t.Uuid ==  Id);
 
             return Task.FromResult(transaction);
+        }
+
+        public Task<TransactionModel?> VoidTransaction(string orderReference, Guid Uuid)
+        {
+            //TODO
+            throw new NotImplementedException();
         }
     }
 }

@@ -25,7 +25,7 @@ namespace AcmePayLtdLibrary.Handlers
         public async Task<GetTransactionModel> Handle(GetTransactionByIdQuery request, CancellationToken cancellationToken)
         {
             //TODO validation
-            var sqlTransaction = await _transactionDataAccess.GetTransactionByIdAync(request.Id);
+            var sqlTransaction = await _transactionDataAccess.GetTransactionByIdAync(new Guid(request.Id));
             return _transactionHelpers.MapSqlTransactionToResponse(sqlTransaction);
         }
     }

@@ -38,12 +38,23 @@ namespace AcmePayLtdAPI.Controllers
 
         // POST api/<TransactionController>
         [HttpPost]
-        //TODO change to input model
+        //TODO change return to StatusModel
         public async Task<TransactionModel> Post([FromBody] PostAuthorizeTransactionModel transaction)
         {
             return await _mediator.Send ( new AuthorizeTransactionCommand(transaction));
             
         }
 
+        // POST api/<TransactionController>/{id}/void
+        [HttpPost("{id}/void")]
+        public async Task<StatusResponseModel> Post(string id, [FromBody] string orderReference)
+        {
+            PostVoidRequestModel voidRequest = new()
+            { 
+                Id = new Guid(id),
+                OrderReference = orderReference
+            };
+            return await _mediator.Send(new VoidTransactionCommand(voidRequest));
+        }
     }
 }

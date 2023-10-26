@@ -11,8 +11,8 @@ namespace AcmePayLtdLibrary.Services
             Currency = transactionModel.Currency,
             CardholderNumber = AnonymizeCardNumber(transactionModel.CardholderNumber),
             HolderName = transactionModel.HolderName,
-            Id = transactionModel.Uuid,
-            Status = transactionModel.Status
+            Id = transactionModel.Uuid.ToString(),
+            Status = (Status)transactionModel.Status
         };
         public string AnonymizeCardNumber(string cardNumber) => cardNumber.Remove(6, 6).Insert(6, "********");
     }
