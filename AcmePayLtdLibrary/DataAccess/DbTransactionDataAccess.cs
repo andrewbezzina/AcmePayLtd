@@ -12,7 +12,7 @@ namespace AcmePayLtdLibrary.DataAccess
         {
             _context = context;
         }
-        public async Task<TransactionModel> AuthorizeTransactionAsync(TransactionModel transaction)
+        public async Task<TransactionModel?> AuthorizeTransactionAsync(TransactionModel transaction)
         {
             if (!_context.Transactions.IsNullOrEmpty() && _context.Transactions.Any(t => t.Uuid == transaction.Uuid))
             {
@@ -54,7 +54,7 @@ namespace AcmePayLtdLibrary.DataAccess
                 return null;
             }
             transaction.VoidOrderReference = orderReference;
-            transaction.Status = (int)Status.Voided;
+            transaction.Status = Status.Voided;
 
             await _context.SaveChangesAsync();
             return transaction;

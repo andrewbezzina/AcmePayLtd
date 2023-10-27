@@ -21,7 +21,7 @@ namespace AcmePayLtdLibrary.Models
         public string? AuthorizeOrderReference { get; set; }
         public string? VoidOrderReference { get; set; }
         public string? CaptureOrderReference { get; set; }
-        public int Status { get; set; }
+        public Status Status { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
     }

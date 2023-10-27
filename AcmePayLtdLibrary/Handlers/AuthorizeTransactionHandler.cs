@@ -1,6 +1,7 @@
 ﻿using AcmePayLtdLibrary.Commands;
 using AcmePayLtdLibrary.DataAccess;
 using AcmePayLtdLibrary.Models;
+using AcmePayLtdLibrary.Models.Response;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Transactions;
 
 namespace AcmePayLtdLibrary.Handlers
 {
-    public class AuthorizeTransactionHandler : IRequestHandler<AuthorizeTransactionCommand, TransactionModel>
+    public class AuthorizeTransactionHandler : IRequestHandler<AuthorizeTransactionCommand, StatusResponseModel>
     {
         private readonly ITransactionDataAccess _data;
 
@@ -19,7 +20,7 @@ namespace AcmePayLtdLibrary.Handlers
         {
             _data = data;
         }
-        public Task<TransactionModel> Handle(AuthorizeTransactionCommand request, CancellationToken cancellationToken)
+        public async Task<StatusResponseModel> Handle(AuthorizeTransactionCommand request, CancellationToken cancellationToken)
         {
             var transaction = new TransactionModel
             {
@@ -32,11 +33,21 @@ namespace AcmePayLtdLibrary.Handlers
                 CVV = request.Transaction.CVV,
                 AuthorizeOrderReference = request.Transaction.OrderReference,
                 Uuid = Guid.NewGuid(),
-                Status = (int)Status.Authorized,
+                Status = Status.Authorized,
                 DateCreated = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow
             };
-            return _data.AuthorizeTransactionAsync(transaction);
+            var authorizedTransaction = await _data.AuthorizeTransactionAsync(transaction);
+            if (authorizedTransaction == null || authorizedTransaction.Status != Status.Authorized)
+            {
+                return null;
+            }
+
+            return new StatusResponseModel
+            {
+                Id = authorizedTransaction.Uuid,
+                Status = authorizedTransaction.Status
+            };
         }
     }
 }

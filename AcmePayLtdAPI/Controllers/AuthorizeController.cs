@@ -5,6 +5,8 @@ using AcmePayLtdLibrary.Models.Response;
 using AcmePayLtdLibrary.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,38 +25,66 @@ namespace AcmePayLtdAPI.Controllers
 
         // GET: api/<TransactionController>
         [HttpGet]
-        // TODO change output model
-        public async Task<IEnumerable<GetTransactionModel>> Get()
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<GetTransactionModel>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<GetTransactionModel>>> Get()
         {
-            return await _mediator.Send(new GetTransactionListQuery());
+            var transactionList = await _mediator.Send(new GetTransactionListQuery());
+            if (transactionList.IsNullOrEmpty())
+            {
+                return NotFound("No Transactions Found");
+            }
+            return transactionList.ToList();
         }
 
         // GET api/<TransactionController>/5
         [HttpGet("{id}")]
-        public async Task<GetTransactionModel> Get(string id)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<GetTransactionModel>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<GetTransactionModel>> Get(string id)
         {
-            return await _mediator.Send(new GetTransactionByIdQuery(id));
+            var transaction = await _mediator.Send(new GetTransactionByIdQuery(id));
+            if(transaction == null)
+            {
+                return NotFound($"No Transaction with Id: {id} found.");
+            }
+            return transaction;
         }
 
         // POST api/<TransactionController>
         [HttpPost]
-        //TODO change return to StatusModel
-        public async Task<TransactionModel> Post([FromBody] PostAuthorizeTransactionModel transaction)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StatusResponseModel>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+         public async Task<ActionResult<StatusResponseModel>> Post([FromBody] PostAuthorizeTransactionModel transaction)
         {
-            return await _mediator.Send ( new AuthorizeTransactionCommand(transaction));
-            
+            var authorizeResponse = await _mediator.Send ( new AuthorizeTransactionCommand(transaction));
+
+            if (authorizeResponse == null)
+            {
+                return NotFound("Something went wrong when trying to validate transaction.");
+            }
+            return authorizeResponse;
         }
 
         // POST api/<TransactionController>/{id}/void
         [HttpPost("{id}/void")]
-        public async Task<StatusResponseModel> Post(string id, [FromBody] string orderReference)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StatusResponseModel>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<StatusResponseModel>> Post(string id, [FromBody] string orderReference)
         {
             PostVoidRequestModel voidRequest = new()
             { 
                 Id = new Guid(id),
                 OrderReference = orderReference
             };
-            return await _mediator.Send(new VoidTransactionCommand(voidRequest));
+
+            var voidResponse = await _mediator.Send(new VoidTransactionCommand(voidRequest));
+            
+            if (voidResponse == null) 
+            {
+                return NotFound($"No valid Authorized Transaction found for requested Id: {id}");
+            }
+            return voidResponse;
         }
     }
 }

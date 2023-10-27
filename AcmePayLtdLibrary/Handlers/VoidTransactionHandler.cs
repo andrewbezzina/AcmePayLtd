@@ -21,16 +21,17 @@ namespace AcmePayLtdLibrary.Handlers
         }
         public async Task<StatusResponseModel> Handle(VoidTransactionCommand request, CancellationToken cancellationToken)
         {
-            var transaction = await _data.VoidTransaction(request.voidRequest.OrderReference, request.voidRequest.Id);
-            if (transaction == null)
+            var transaction = await _data.GetTransactionByIdAync(request.voidRequest.Id);
+            if (transaction == null || transaction.Status != Status.Authorized)
             {
                 return null;
             }
-        
+            var voidedTransaction = await _data.VoidTransaction(request.voidRequest.OrderReference, request.voidRequest.Id);
+
             return new StatusResponseModel
             {
-                Id = transaction.Uuid,
-                Status = (Status)transaction.Status
+                Id = voidedTransaction.Uuid,
+                Status = voidedTransaction.Status
             };
         }
     }
