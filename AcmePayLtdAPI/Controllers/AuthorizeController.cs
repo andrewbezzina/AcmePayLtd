@@ -3,6 +3,7 @@ using AcmePayLtdLibrary.Models;
 using AcmePayLtdLibrary.Models.Request;
 using AcmePayLtdLibrary.Models.Response;
 using AcmePayLtdLibrary.Queries;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -17,10 +18,12 @@ namespace AcmePayLtdAPI.Controllers
     public class AuthorizeController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IValidator<PostAuthorizeTransactionModel> _postAuthorizeTransactionValidator;
 
-        public AuthorizeController(IMediator mediator)
+        public AuthorizeController(IMediator mediator, IValidator<PostAuthorizeTransactionModel> postAuthorizeTransactionValidator)
         {
             _mediator = mediator;
+            _postAuthorizeTransactionValidator = postAuthorizeTransactionValidator;
         }
 
         // GET: api/<TransactionController>
@@ -57,6 +60,12 @@ namespace AcmePayLtdAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
          public async Task<ActionResult<StatusResponseModel>> Post([FromBody] PostAuthorizeTransactionModel transaction)
         {
+            var validationResult = _postAuthorizeTransactionValidator.Validate(transaction);
+            if(!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new Error(e.ErrorCode, e.ErrorMessage));
+                return BadRequest(errors);
+            }
             var authorizeResponse = await _mediator.Send ( new AuthorizeTransactionCommand(transaction));
 
             if (authorizeResponse == null)
@@ -108,4 +117,5 @@ namespace AcmePayLtdAPI.Controllers
             return captureResponse;
         }
     }
+    public record Error(string errorCode, string errorMessage);
 }

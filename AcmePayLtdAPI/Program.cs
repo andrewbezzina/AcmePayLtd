@@ -4,6 +4,10 @@ using AcmePayLtdLibrary;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation;
+using Microsoft.AspNetCore.Identity;
+using AcmePayLtdLibrary.Models.Request;
+using AcmePayLtdAPI.Validators;
 
 namespace AcmePayLtdAPI
 {
@@ -32,6 +36,7 @@ namespace AcmePayLtdAPI
             //builder.Services.AddSingleton<ITransactionDataAccess, DemoTransactionDataAccess>();
 
             builder.Services.AddScoped<ITransactionHelpers, TransactionHelpers>();
+            builder.Services.AddScoped<IValidator<PostAuthorizeTransactionModel>, PostAuthorizeTransactionValidator>();
 
             var app = builder.Build();
 
