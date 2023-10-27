@@ -28,8 +28,8 @@ namespace AcmePayLtdAPI
             builder.Services.AddDbContext<TransactionDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("TransactionSqlDatabase")));
 
             builder.Services.AddScoped<ITransactionDataAccess, DbTransactionDataAccess>();
-            // If you fail to connect to sql db for some reason please comment aboove line and uncomment below to use in memory data
-            //services.AddSingleton<ITransactionDataAccess, DemoTransactionDataAccess>();
+            // If you fail to connect to sql db for some reason please comment above line and uncomment below to use in memory data
+            //builder.Services.AddSingleton<ITransactionDataAccess, DemoTransactionDataAccess>();
 
             builder.Services.AddScoped<ITransactionHelpers, TransactionHelpers>();
 

@@ -1,4 +1,5 @@
 ﻿using AcmePayLtdLibrary.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +17,13 @@ namespace AcmePayLtdLibrary.DataAccess
             _transactions.Add(new TransactionModel { Amount = 75, CardholderNumber = "1234123412341234", Currency = "EUR", CVV = 123, ExpirationMonth = 12, ExpirationYear = 2023, HolderName = "Andrew Bezzina", Id = 2, AuthorizeOrderReference = "Test 2", Uuid = Guid.NewGuid(), Status = Status.Authorized });
         }
 
-        public Task<List<TransactionModel>> GetTransactionsAync()
+        public Task<PaginatedItemsViewModel<TransactionModel>?> GetTransactionsAync(int pageIndex, int pageSize)
         {
-            return Task.FromResult(_transactions);
+            // ignoring pagination in demo data access.
+            PaginatedItemsViewModel<TransactionModel> paginatedList = new(pageIndex, pageSize, 0, _transactions);
+            return Task.FromResult(paginatedList);
         }
 
-        //TODO replace with input contract
         public Task<TransactionModel> AuthorizeTransactionAsync(TransactionModel transaction)
         {
             transaction.Id = _transactions.Max(x => x.Id) + 1;
@@ -38,8 +40,29 @@ namespace AcmePayLtdLibrary.DataAccess
 
         public Task<TransactionModel?> VoidTransaction(string orderReference, Guid Uuid)
         {
-            //TODO
-            throw new NotImplementedException();
+            var transaction = _transactions.FirstOrDefault(t => t.Uuid == Uuid);
+            if (transaction == null)
+            {
+                return null;
+            }
+            transaction.VoidOrderReference = orderReference;
+            transaction.Status = Status.Voided;
+
+            return Task.FromResult(transaction);
         }
+
+        public Task<TransactionModel?> CaptureTransaction(string orderReference, Guid Uuid)
+        {
+            var transaction = _transactions.FirstOrDefault(t => t.Uuid == Uuid);
+            if (transaction == null)
+            {
+                return null;
+            }
+            transaction.CaptureOrderReference = orderReference;
+            transaction.Status = Status.Captured;
+
+            return Task.FromResult(transaction);
+        }
+
     }
 }

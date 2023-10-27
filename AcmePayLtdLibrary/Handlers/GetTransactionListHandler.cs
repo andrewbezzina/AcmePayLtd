@@ -13,8 +13,10 @@ using System.Threading.Tasks;
 
 namespace AcmePayLtdLibrary.Handlers
 {
-    public class GetTransactionListHandler : IRequestHandler<GetTransactionListQuery, IEnumerable<GetTransactionModel>>
+    public class GetTransactionListHandler : IRequestHandler<GetTransactionListQuery, PaginatedItemsViewModel<GetTransactionModel>>
     {
+        private readonly int DEFAULT_PAGE_INDEX = 1;
+        private readonly int DEFAULT_PAGE_SIZE = 5;
         private readonly ITransactionDataAccess _data;
         private readonly ITransactionHelpers _transactionHelpers;
 
@@ -23,15 +25,25 @@ namespace AcmePayLtdLibrary.Handlers
             _data = data;
             _transactionHelpers = transactionHelpers;
         }
-        public async Task<IEnumerable<GetTransactionModel>?> Handle(GetTransactionListQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedItemsViewModel<GetTransactionModel>?> Handle(GetTransactionListQuery request, CancellationToken cancellationToken)
         {
-            var sqlTransations = await _data.GetTransactionsAync();
-            if(sqlTransations.IsNullOrEmpty())
+            int pageIndex = request.pageIndex.HasValue ? request.pageIndex.Value : DEFAULT_PAGE_INDEX;
+            int pageSize = request.pageSize.HasValue ? request.pageSize.Value : DEFAULT_PAGE_SIZE;
+
+            var sqlTransations = await _data.GetTransactionsAync(pageIndex, pageSize);
+            if(sqlTransations == null || sqlTransations.Data.IsNullOrEmpty())
             {
                 return null;
             }
 
-            return sqlTransations.Select(sqlTransations => _transactionHelpers.MapSqlTransactionToResponse(sqlTransations));
+            PaginatedItemsViewModel<GetTransactionModel> paginatedResponse = new(
+                sqlTransations.PageIndex,
+                sqlTransations.PageSize,
+                sqlTransations.Count,
+                sqlTransations.Data.Select(sqlTransation => _transactionHelpers.MapSqlTransactionToResponse(sqlTransation))
+                );
+
+            return paginatedResponse;
         }
     }
 }

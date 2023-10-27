@@ -27,14 +27,14 @@ namespace AcmePayLtdAPI.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<GetTransactionModel>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<GetTransactionModel>>> Get()
+        public async Task<ActionResult<PaginatedItemsViewModel<GetTransactionModel>>> Get(int? pageIndex, int? pageSize)
         {
-            var transactionList = await _mediator.Send(new GetTransactionListQuery());
-            if (transactionList.IsNullOrEmpty())
+            var transactionList = await _mediator.Send(new GetTransactionListQuery(pageIndex, pageSize));
+            if (transactionList == null)
             {
                 return NotFound("No Transactions Found");
             }
-            return transactionList.ToList();
+            return transactionList;
         }
 
         // GET api/<TransactionController>/5
@@ -70,7 +70,7 @@ namespace AcmePayLtdAPI.Controllers
         [HttpPost("{id}/void")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StatusResponseModel>))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<StatusResponseModel>> Post(string id, [FromBody] string orderReference)
+        public async Task<ActionResult<StatusResponseModel>> Void(string id, [FromBody] string orderReference)
         {
             PostVoidRequestModel voidRequest = new()
             { 
@@ -85,6 +85,27 @@ namespace AcmePayLtdAPI.Controllers
                 return NotFound($"No valid Authorized Transaction found for requested Id: {id}");
             }
             return voidResponse;
+        }
+
+        // POST api/<TransactionController>/{id}/capture
+        [HttpPost("{id}/capture")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<StatusResponseModel>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<StatusResponseModel>> Capture(string id, [FromBody] string orderReference)
+        {
+            PostCaptureRequestModel captureRequest = new()
+            {
+                Id = new Guid(id),
+                OrderReference = orderReference
+            };
+
+            var captureResponse = await _mediator.Send(new CaptureTransactionCommand(captureRequest));
+
+            if (captureResponse == null)
+            {
+                return NotFound($"No valid Authorized Transaction found for requested Id: {id}");
+            }
+            return captureResponse;
         }
     }
 }

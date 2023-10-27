@@ -10,6 +10,7 @@
     <PackageReference Include="MediatR" Version="12.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.13" />
+    <PackageReference Include="Pagination.EntityFrameworkCore.Extensions" Version="2.5.1" />
   </ItemGroup>
 
 </Project>
